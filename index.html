@@ -24,9 +24,10 @@ body {
 
 			//  We need this because the assets are on github pages
 			//  Remove the next 2 lines if running locally
-			this.load.baseURL = 'https://nikosioannoy.github.io/Super-Mario/';
-			this.load.crossOrigin = 'anonymous';
-
+			game.load.audio('jump', ['audio/jump.wav','audio/jump.ogg']);
+			game.load.audio('coinss', ['audio/coin.wav','audio/coin.ogg']);
+			game.load.audio('stomp', ['audio/stomp.wav','audio/stomp.ogg']);
+                        game.load.audio('Rings of Saturn - Godless Times', ['audio/Rings of Saturn - Godless Times.mp3', 'audio/Rings_of_Saturn_-_Godless_Times.ogg']);
 			this.load.spritesheet('tiles', 'assets/super_mario_tiles.png', 16,
 					16);
 			this.load.spritesheet('goomba', 'assets/goomba.png', 16, 16);
@@ -36,7 +37,19 @@ body {
 			this.load.tilemap('level', 'assets/super_mario_map.json', null,
 					Phaser.Tilemap.TILED_JSON);
 		}
-
+		var gameoverState;
+                var resettheplayer;
+		var score = 0;
+		var scoreString = '';
+		var scoreText;
+                var lives = 3;
+                var livesString= ' '; 
+                var livesText;
+		var sndjump;
+		var sndcoinss;
+		var sndstomp;
+                var s;
+                var music;  
 		function create() {
 			Phaser.Canvas.setImageRenderingCrisp(game.canvas)
 			game.scale.pageAlignHorizontally = true;
@@ -45,7 +58,8 @@ body {
 			game.physics.startSystem(Phaser.Physics.ARCADE);
 
 			game.stage.backgroundColor = '#5c94fc';
-
+                        music = game.add.audio('Rings of Saturn - Godless Times');
+                        music.play();  
 			map = game.add.tilemap('level');
 			map.addTilesetImage('tiles', 'tiles');
 			map.setCollisionBetween(3, 12, true, 'solid');
@@ -72,6 +86,20 @@ body {
 			goombas.setAll('body.velocity.x', -20);
 			goombas.setAll('body.gravity.y', 500);
 
+			scoreString = 'Score : ';
+    
+			scoreText = game.add.text(10, 10, scoreString + score, { font: '20px Arial', fill: '#fff' });
+			scoreText.fixedToCamera = true;
+			scoreText.cameraOffset.setTo(10, 10)
+
+                        livesString = 'Lives : x ';
+    
+			livesText = game.add.text(2, 2, livesString + lives, { font: '15px Arial', fill: '#fff' });
+			livesText.fixedToCamera = true;
+			livesText.cameraOffset.setTo(180, 3);
+
+
+
 			player = game.add.sprite(16, game.world.height - 48, 'mario');
 			game.physics.arcade.enable(player);
 			player.body.gravity.y = 370;
@@ -81,6 +109,9 @@ body {
 			player.goesRight = true;
 
 			game.camera.follow(player);
+ 
+                        var gameoverLabel = stateText = game.add.text(500, 300, ' ', {font: '50px Arial', fill: '#F2F2F2'});
+                        stateText.anchor.setTo(1.1, 0.2);
 
 			cursors = game.input.keyboard.createCursorKeys();
 		}
@@ -110,6 +141,8 @@ body {
 				}
 
 				if (cursors.up.isDown && player.body.onFloor()) {
+					sndjump = game.add.audio('jump');
+					sndjump.play();
 					player.body.velocity.y = -190;
 					player.animations.stop();
 				}
@@ -124,6 +157,11 @@ body {
 		}
 
 		function coinOverlap(player, coin) {
+			sndcoinss = game.add.audio('coinss');
+			sndcoinss.play();
+			score += 20;
+        
+			scoreText.text = scoreString + score;
 			coin.kill();
 		}
 
@@ -132,6 +170,11 @@ body {
 				goomba.animations.stop();
 				goomba.frame = 2;
 				goomba.body.enable = false;
+				sndstomp = game.add.audio('stomp');
+				sndstomp.play();
+				score += 20;
+    
+				scoreText.text = scoreString + score;
 				player.body.velocity.y = -80;
 				game.time.events.add(Phaser.Timer.SECOND, function() {
 					goomba.kill();
@@ -141,10 +184,25 @@ body {
 				player.body.enable = false;
 				player.animations.stop();
 				game.time.events.add(Phaser.Timer.SECOND * 3, function() {
-					game.paused = true;
+					music.stop();
+					game.state.restart();
+				lives -= 1;
+                                if (lives < 0){
+                                stateText.text = " GAME OVER \n Click to restart";
+                                stateText.visible = true;
+                                game.input.onTap.addOnce(restart,this);
+                                };
+
+
+
+				livesString = 'Lives : x ';
+    
+				livesText = game.add.text(2, 10, livesString + lives, { font: '15px Arial', fill: '#fff' });
+				livesText.fixedToCamera = true;
+				livesText.cameraOffset.setTo(2, 10);
 				});
 			}
 		}
-	</script>
+       </script>
 </body>
 </html>
