@@ -24,6 +24,10 @@ body {
 
 			//  We need this because the assets are on github pages
 			//  Remove the next 2 lines if running locally
+			
+			this.load.baseURL = 'https://nikosioannoy.github.io/Super-Mario/';
+			this.load.crossOrigin = 'anonymous';
+			
 			game.load.audio('jump', ['audio/jump.wav','audio/jump.ogg']);
 			game.load.audio('coinss', ['audio/coin.wav','audio/coin.ogg']);
 			game.load.audio('stomp', ['audio/stomp.wav','audio/stomp.ogg']);
