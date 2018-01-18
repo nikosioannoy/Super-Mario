@@ -37,6 +37,8 @@ body {
 			this.load.spritesheet('newenemy', 'assets/newenemy.png', 16, 16);
 			this.load.tilemap('level', 'assets/super_mario_map.json', null,
 					Phaser.Tilemap.TILED_JSON);
+                        this.load.tilemap('level2', 'assets/super_mario_map2.json', null,
+					Phaser.Tilemap.TILED_JSON); 
 		}
 
 		var score = 0;
@@ -50,17 +52,46 @@ body {
 		var sndstomp;
                 var s;
                 var music;  
-		var kills =0;
+		var kills = 0;
+                var anscount = 0;
                	
 		function create() {
 
-                       
-                        var popup = confirm("Mario by Nikos Ioannoy.(And Google lol...) \n Pressing Ok will start the 1st map and cancel will start the 2nd map.(Not ready yet) Have fun! :)");
+                       if (anscount==0){ 
+                        var popup = confirm("Mario by Nikos Ioannoy.(And Google lol...) \n Pressing Ok will start the 1st map and cancel will start the 2nd map. Have fun! :)");
 			if (popup) {
 			game.state.start;
-			}            
-			
-			
+                       map = game.add.tilemap('level');
+			map.addTilesetImage('tiles', 'tiles');
+			map.setCollisionBetween(3, 12, true, 'solid');
+                        map.createLayer('background');
+
+			layer = map.createLayer('solid');
+			layer.resizeWorld();
+
+
+			} else {
+                           map = game.add.tilemap('level2');
+			map.addTilesetImage('tiles', 'tiles');
+			map.setCollisionBetween(3, 12, true, 'solid');
+                        map.createLayer('background');
+
+			layer = map.createLayer('solid');
+			layer.resizeWorld();
+
+         
+			}
+		}
+                if (anscount==1){
+                   map = game.add.tilemap('level2');
+			map.addTilesetImage('tiles', 'tiles');
+			map.setCollisionBetween(3, 12, true, 'solid');
+                        map.createLayer('background');
+
+			layer = map.createLayer('solid');
+			layer.resizeWorld();
+}
+                	
 			Phaser.Canvas.setImageRenderingCrisp(game.canvas)
 			game.scale.pageAlignHorizontally = true;
 			game.scale.pageAlignVertically = true
@@ -70,14 +101,14 @@ body {
 			game.stage.backgroundColor = '#5c94fc';
                         music = game.add.audio('Rings of Saturn - Godless Times');
                         music.play();  
-			map = game.add.tilemap('level');
-			map.addTilesetImage('tiles', 'tiles');
-			map.setCollisionBetween(3, 12, true, 'solid');
+			//map = game.add.tilemap('level');
+			//map.addTilesetImage('tiles', 'tiles');
+			//map.setCollisionBetween(3, 12, true, 'solid');
 
-			map.createLayer('background');
+			//map.createLayer('background');
 
-			layer = map.createLayer('solid');
-			layer.resizeWorld();
+			//layer = map.createLayer('solid');
+			//layer.resizeWorld();
 
 			coins = game.add.group();
 			coins.enableBody = true;
@@ -204,6 +235,7 @@ body {
                 music.stop();
                 player.body.enable = false;
                 endflag.kill();
+                anscount++;
                 game.time.events.add(Phaser.Timer.SECOND * 2, function(){
 		player.frame = 13;
 		});   
@@ -213,7 +245,15 @@ body {
 			game.paused = true;
 			game.paused = false;
 			game.state.restart();
-			lives = 3;
+                        //game.state.start;
+			map = game.add.tilemap('level2');
+			map.addTilesetImage('tiles', 'tiles');
+			map.setCollisionBetween(3, 12, true, 'solid');
+                        map.createLayer('background');
+
+			layer = map.createLayer('solid');
+			layer.resizeWorld();
+                        lives = 3;
 			livesString = 'Lives : x';
     
 			livesText = game.add.text(150, 2, livesString + lives, { font: '13px Arial', fill: '#fff' });
@@ -274,6 +314,8 @@ body {
 				music.stop();
 				game.state.restart();
 				lives -= 1;
+                                score = 0;
+                                kills =0;
 				livesString = 'Lives : x ';
 				livesText = game.add.text(2, 2, livesString + lives, { font: '15px Arial', fill: '#fff' });
 				livesText.fixedToCamera = true;
@@ -289,6 +331,7 @@ body {
 				if (answer) {
 					game.paused= false;
 					game.state.restart();
+                                        anscount = 0;
 					lives = 3;
 					livesString = 'Lives : x ';
     
@@ -333,6 +376,8 @@ body {
 				music.stop();
 				game.state.restart();
 				lives -= 1;
+                                score = 0;
+                                kills = 0;
 				livesString = 'Lives : x ';
 				livesText = game.add.text(2, 2, livesString + lives, { font: '15px Arial', fill: '#fff' });
 				livesText.fixedToCamera = true;
@@ -348,6 +393,7 @@ body {
 				if (answer) {
 					game.paused= false;
 					game.state.restart();
+                                        anscount = 0; 
 					lives = 3;
 					livesString = 'Lives : x ';
     
